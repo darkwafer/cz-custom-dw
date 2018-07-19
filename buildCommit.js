@@ -42,6 +42,7 @@ module.exports = function buildCommit(answers, config) {
   var head = (answers.type + addScope(answers.scope) + addSubject(answers.subject)).slice(0, maxLineWidth);
   // Wrap these lines at 100 characters
   var body = wrap(answers.body, wrapOptions) || '';
+  var desc = wrap(answers.desc, wrapOptions) || '';
   body = body.split('|').join('\n');
 
   var breaking = wrap(answers.breaking, wrapOptions);
@@ -51,6 +52,9 @@ module.exports = function buildCommit(answers, config) {
   if (body) {
     var bodyPrefix = (entry[answers.type].body && entry[answers.type].body.prefix) || ''
     result += '\n\n' + bodyPrefix + body;
+  }
+  if (desc) {
+    result += '\n\n' + desc;
   }
   if (breaking) {
     var breakingPrefix = entry && entry[answers.type].breaking && entry[answers.type].breaking.prefix ? entry[answers.type].breaking.prefix : 'BREAKING CHANGE:';

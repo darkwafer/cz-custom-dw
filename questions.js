@@ -32,6 +32,8 @@ module.exports = {
     messages.breaking = messages.breaking || 'List any BREAKING CHANGES (optional):\n';
     messages.footer = messages.footer || 'List any ISSUES CLOSED by this change (optional). E.g.: #31, #34:\n';
     messages.confirmCommit = messages.confirmCommit || 'Are you sure you want to proceed with the commit above?'
+    messages.desc = messages.desc || 'Description'
+
     var questions = [
       {
         type: 'list',
@@ -113,6 +115,16 @@ module.exports = {
         },
         when: function (answers) {
           return entry[answers.type].body
+        }
+      },
+      {
+        type: 'input',
+        name: 'description',
+        message: function (answers) {
+          return entry[answers.type].desc ? entry[answers.type].desc.message : message.desc
+        },
+        when: function (answers) {
+          return entry[answers.type].desc
         }
       },
       {

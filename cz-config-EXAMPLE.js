@@ -23,56 +23,22 @@
 
 module.exports = {
   entry: {
-    Feat: {
-      value: 'Feat',
-      name: 'Feat:    implement new feature',
-      subject: {
-        prefix: 'feat: ',
-        message: 'what is the feature aim for '
-      },
-      body: {
-        prefix: 'description: ',
-        message: 'more detailed information about the feature'
-      }
-    },
     Fix: {
       value: 'Fix',
       name: 'Fix:    Fix a bug',
       scope: {
         custom: true,
-        message: 'scopes and issue #'
+        message: 'scopes'
       },
       subject: {
-        prefix: 'Problem Description: ',
-        message: 'Describe the issue symptom, reproduce step and root cause if possible'
+        message: 'Sub'
       },
-      body: {
-        prefix: 'Solution Description: ',
-        message: 'Summary of solution'
+      desc: {
+        message: 'Solution Description: ',
       },
       footer: {
         prefix: 'Technical Detail: ',
         message: 'Detailed information'
-      }
-    },
-    Refactor: {
-      value: 'Refactor',
-      name: 'Refactor:    重构模块功能',
-      subject: {
-        prefix: '模块: ',
-        message: '重构了什么代码模块'
-      },
-      body: {
-        prefix: '原因: ',
-        message: '简述为什么重构'
-      }
-    },
-    Test: {
-      value: 'Test',
-      name: 'Test:    添加测试用例',
-      subject: {
-        prefix: '用例: ',
-        message: '简述增加某个模块的测试用例'
       }
     }
   },

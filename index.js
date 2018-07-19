@@ -17,7 +17,7 @@ var buildCommit = require('./buildCommit');
 function readConfigFile() {
 
   // First try to find the .cz-config.js config file
-  var czConfig = findConfig.require(CZ_CONFIG_NAME, {home: false});
+  var czConfig = findConfig.require(CZ_CONFIG_EXAMPLE_LOCATION, {home: false});
   if (czConfig) {
     return czConfig;
   }
@@ -49,6 +49,7 @@ module.exports = {
 
     log.info('\n\nLine 1 will be cropped at 100 characters. All other lines will be wrapped after 100 characters.\n');
 
+    // todo: dynamic create the questions template based on the type
     var questions = require('./questions').getQuestions(config, cz);
 
     cz.prompt(questions).then(function(answers) {
