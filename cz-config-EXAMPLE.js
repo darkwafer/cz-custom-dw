@@ -23,48 +23,36 @@
 
 module.exports = {
   entry: {
-    Add: {
-      value: 'Add',
-      name: 'Add:    新增模块功能',
+    Feat: {
+      value: 'Feat',
+      name: 'Feat:    implement new feature',
       subject: {
-        prefix: '模块: ',
-        message: '新增了什么模块'
+        prefix: 'feat: ',
+        message: 'what is the feature aim for '
       },
       body: {
-        prefix: '作用: ',
-        message: '简述这个模块是做什么用的'
+        prefix: 'description: ',
+        message: 'more detailed information about the feature'
       }
     },
     Fix: {
       value: 'Fix',
-      name: 'Fix:    修复Bug',
+      name: 'Fix:    Fix a bug',
       scope: {
         custom: true,
-        message: '描述解决了什么问题，如果有Bug号的时候，带上Bug号'
+        message: 'scopes and issue #'
       },
       subject: {
-        prefix: '原因: ',
-        message: '描述引入这个问题的原因'
+        prefix: 'Problem Description: ',
+        message: 'Describe the issue symptom, reproduce step and root cause if possible'
       },
       body: {
-        prefix: '方案: ',
-        message: '简述解决方案'
+        prefix: 'Solution Description: ',
+        message: 'Summary of solution'
       },
       footer: {
-        prefix: '影响范围: ',
-        message: '描述代码影响范围（可选）'
-      }
-    },
-    Change: {
-      value: 'Change',
-      name: 'Change:    修改模块功能',
-      subject: {
-        prefix: '模块: ',
-        message: '修改了什么模块'
-      },
-      body: {
-        prefix: '原因: ',
-        message: '简述为什么修改'
+        prefix: 'Technical Detail: ',
+        message: 'Detailed information'
       }
     },
     Refactor: {
@@ -109,8 +97,8 @@ module.exports = {
   */
   // override the messages, defaults are as follows
   messages: {
-    type: '请选择本次commit的类型:',
-    confirmCommit: '您确认要提交以上的commit吗?'
+    type: 'choose commit type:',
+    confirmCommit: 'confirm to commit?'
   },
   allowCustomScopes: true
 };

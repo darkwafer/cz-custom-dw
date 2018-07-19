@@ -50,15 +50,15 @@ module.exports = function buildCommit(answers, config) {
   var result = head;
   if (body) {
     var bodyPrefix = (entry[answers.type].body && entry[answers.type].body.prefix) || ''
-    result += '\n' + bodyPrefix + body;
+    result += '\n\n' + bodyPrefix + body;
   }
   if (breaking) {
     var breakingPrefix = entry && entry[answers.type].breaking && entry[answers.type].breaking.prefix ? entry[answers.type].breaking.prefix : 'BREAKING CHANGE:';
-    result += '\n' + breakingPrefix + '\n' + breaking;
+    result += '\n\n' + breakingPrefix + '\n' + breaking;
   }
   if (footer) {
     var footerPrefix = entry && entry[answers.type].footer.prefix ? entry[answers.type].footer.prefix : 'ISSUES CLOSED:';
-    result += '\n' + footerPrefix + footer;
+    result += '\n\n' + footerPrefix + footer;
   }
   return escapeSpecialChars(result);
 };
