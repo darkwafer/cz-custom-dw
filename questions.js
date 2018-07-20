@@ -109,7 +109,7 @@ module.exports = {
       },
       {
         type: 'input',
-        name: 'symptom',
+        name: 'body.symptom',
         message: function (answers) {
           return entry[answers.type].body.symptom ? entry[answers.type].body.symptom.message : message.undefined
         },
@@ -119,7 +119,7 @@ module.exports = {
       },
       {
         type: 'input',
-        name: 'solution',
+        name: 'body.solution',
         message: function (answers) {
           return entry[answers.type].body.solution ? entry[answers.type].body.solution.message : message.undefined
         },
@@ -147,7 +147,7 @@ module.exports = {
           if (config.allowBreakingChanges && config.allowBreakingChanges.indexOf(answers.type.toLowerCase()) >= 0) {
             return entry[answers.type].breaking;
           }
-          return entry[answers.type].breaking; // no breaking changes allowed unless specifed
+          return entry[answers.type].breaking; // no breaking changes allowed unless specified
         }
       },
       {

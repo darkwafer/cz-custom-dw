@@ -18,7 +18,7 @@ module.exports = function buildCommit(answers, config) {
   function addScope(scope) {
     if (!scope) return '\n'; //it could be type === WIP. So there is no scope
 
-    return ': ' + scope.trim() + '\n';
+    return '(' + scope.trim() + ')\n';
   }
 
   function addSubject(subject) {

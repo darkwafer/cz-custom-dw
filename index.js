@@ -49,7 +49,7 @@ module.exports = {
 
     log.info('\n\nLine 1 will be cropped at 100 characters. All other lines will be wrapped after 100 characters.\n');
 
-    // todo: dynamic create the questions template based on the type
+    // todo: dynamic create the questions template based on the type (rxjs?)
     var questions = require('./questions').getQuestions(config, cz);
 
     cz.prompt(questions).then(function(answers) {
