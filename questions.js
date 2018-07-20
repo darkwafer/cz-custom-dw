@@ -32,7 +32,7 @@ module.exports = {
     messages.breaking = messages.breaking || 'List any BREAKING CHANGES (optional):\n';
     messages.footer = messages.footer || 'List any ISSUES CLOSED by this change (optional). E.g.: #31, #34:\n';
     messages.confirmCommit = messages.confirmCommit || 'Are you sure you want to proceed with the commit above?'
-    messages.desc = messages.desc || 'Description'
+    messages.undefined = 'No Description for this entry'
 
     var questions = [
       {
@@ -109,22 +109,32 @@ module.exports = {
       },
       {
         type: 'input',
+        name: 'symptom',
+        message: function (answers) {
+          return entry[answers.type].body.symptom ? entry[answers.type].body.symptom.message : message.undefined
+        },
+        when: function (answers) {
+          return entry[answers.type].body.symptom
+        }
+      },
+      {
+        type: 'input',
+        name: 'solution',
+        message: function (answers) {
+          return entry[answers.type].body.solution ? entry[answers.type].body.solution.message : message.undefined
+        },
+        when: function (answers) {
+          return entry[answers.type].body.solution
+        }
+      },
+      {
+        type: 'input',
         name: 'body',
         message: function (answers) {
           return entry[answers.type].body ? entry[answers.type].body.message : message.body
         },
         when: function (answers) {
           return entry[answers.type].body
-        }
-      },
-      {
-        type: 'input',
-        name: 'description',
-        message: function (answers) {
-          return entry[answers.type].desc ? entry[answers.type].desc.message : message.desc
-        },
-        when: function (answers) {
-          return entry[answers.type].desc
         }
       },
       {

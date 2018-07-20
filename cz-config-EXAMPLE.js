@@ -1,45 +1,38 @@
 'use strict';
 
-// 配置用例基于下述提交准则
-
-// #### 解决Bug的代码提交
-// - 第一句描述解决了什么问题
-// - 第二句描述引入这个问题的原因。
-// - 第三句简述解决方案。
-// - 最后一句描述代码影响范围（可选）
-
-// #### 新增功能的代码提交
-// - Add:新增了什么模块，简述这个模块是做什么用的。
-// - Delete: 删除了什么模块，简述为什么删除。
-// - Change: 修改了什么模块，简述为什么修改。
-
-// #### 重构功能的代码提交
-// - 重构功能的代码提交
-// - Refactor：重构了什么代码模块，简述为什么重构。
-
-// #### 测试的代码提交
-// - 测试的代码提交
-// - Test：简述增加某个模块的测试用例。
-
 module.exports = {
   entry: {
-    Fix: {
-      value: 'Fix',
-      name: 'Fix:    Fix a bug',
+    fix: {
+      value: 'fix',
+      name: 'fix a bug',
       scope: {
         custom: true,
         message: 'scopes'
       },
       subject: {
-        message: 'Sub'
+        message: 'Subject:'
       },
-      desc: {
-        message: 'Solution Description: ',
+      body: {
+        /* 
+         * split the body to multiple parts (symptom, solution, detail ) for question
+         */
+        symptom: {
+          prefix: 'Problem Description: ',
+          message: 'Symptom: ',
+        },
+        
+        solution: {
+          prefix: 'Solution Description: ',
+          message: 'Solution: ',
+        },
+
+        detail: {
+          prefix: 'Technical Detail: ',
+          message: 'Details: ',
+        },
+
+        message: 'Additional Information:'
       },
-      footer: {
-        prefix: 'Technical Detail: ',
-        message: 'Detailed information'
-      }
     }
   },
   // scopes: [
@@ -62,9 +55,12 @@ module.exports = {
   },
   */
   // override the messages, defaults are as follows
+  
   messages: {
-    type: 'choose commit type:',
-    confirmCommit: 'confirm to commit?'
+    symptom: 'Problem Description: ',
+    solution: 'Solution Description: ',
+    detail: 'Technical Detail: ',
   },
+  
   allowCustomScopes: true
 };

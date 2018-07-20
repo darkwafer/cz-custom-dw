@@ -50,6 +50,7 @@ module.exports = function buildCommit(answers, config) {
 
   var result = head;
   if (body) {
+    // todo: summarize at sub-components and push to body
     var bodyPrefix = (entry[answers.type].body && entry[answers.type].body.prefix) || ''
     result += '\n\n' + bodyPrefix + body;
   }
