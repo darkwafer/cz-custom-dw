@@ -11,7 +11,7 @@ module.exports = function buildCommit(answers, config) {
   var wrapOptions = {
     trim: true,
     newline: '\n',
-    indent:'',
+    indent: '',
     width: maxLineWidth
   };
 
@@ -38,21 +38,23 @@ module.exports = function buildCommit(answers, config) {
   }
 
   // Hard limit this line
-  var head = (answers.type + addScope(answers.scope) + addSubject(answers.subject)).slice(0, maxLineWidth);
+  var head = (answers.type
+    + addScope(answers.issue ? answers.issue + ', ' + answers.scope : answers.scope)
+    + addSubject(answers.subject)).slice(0, maxLineWidth);
 
   // Wrap these lines at 100 characters
   var body = ''
   if (config.body.hasOwnProperty(answers.type)) {
     var template = config.body[answers.type]
-    Object.keys(template).forEach(function(name) {
-      body = body.concat(answers[`body.${name}`])
+    Object.keys(template).forEach(function (name) {
+      body = body.concat(answers[`body.${name}`]);
+      body = wrap(body, wrapOptions) || '';
     });
   } else {
     // attach default body 
-    body = answers.body
+    body = wrap(answers.body, wrapOptions) || '';
   }
-  
-  var body = wrap(body, wrapOptions) || '';
+
   body = body.split('|').join('\n');
 
   var breaking = wrap(answers.breaking, wrapOptions);
@@ -69,6 +71,9 @@ module.exports = function buildCommit(answers, config) {
   if (footer) {
     var footerPrefix = config && config.footerPrefix ? config.footerPrefix : 'ISSUES CLOSED:';
     result += '\n\n' + footerPrefix + ' ' + footer;
+  }
+  if (answers.issue) {
+    result += '\n' + config.issue.link + answers.issue;
   }
 
   return escapeSpecialChars(result);

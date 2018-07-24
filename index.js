@@ -11,7 +11,7 @@ var temp = require('temp').track();
 var fs = require('fs');
 var path = require('path');
 var buildCommit = require('./buildCommit');
-
+var messages = {};
 
 /* istanbul ignore next */
 function readConfigFile() {
@@ -68,34 +68,40 @@ function makeSubject(config) {
   }
 }
 
-function makeBody(name, v) {
-  if (!name) {
-    return {
-      type: 'input',
-      name: `body`,
-      message: "default body"
-    }
+function makeTracker(config) {
+  return {
+    type: 'input',
+    name: 'issue',
+    message: messages.issue,
+    filter: function (val) {
+      if (!val) return '';
+      return config.issue.name + '#' + val;
+    },
   }
+}
+
+function makeDefault(name) {
+  return {
+    type: 'input',
+    name: name,
+    message: messages[`${name}`]
+  }
+}
+
+function makeBody(name, v) {
   return {
     type: 'input',
     name: `body.${name}`,
     message: v.message,
     filter(val) {
+      if (!val.trim()) return "";
       var content = '';
       content = content.concat(v.prefix ? v.prefix.concat('|\t') : '')
       content = content.concat(val)
-      content = content.concat(v.postfix ? v.postfix : '\n')
+      content = content.concat(v.postfix ? v.postfix : '|')
       // wrap the content with prefix and postfix in config 
       return content
     }
-  }
-}
-
-function makeFooter(config) {
-  return {
-    type: 'input',
-    name: 'footer',
-    message: config.messages.footer
   }
 }
 
@@ -120,10 +126,7 @@ function makeConfirm(config) {
   }
 }
 
-
-
 module.exports = {
-
   prompter: function (cz, commit) {
     var config = readConfigFile();
     const Rx = require('rx');
@@ -132,18 +135,31 @@ module.exports = {
 
     log.info('\n\nLine 1 will be cropped at 100 characters. All other lines will be wrapped after 100 characters.\n');
 
+    messages = config.messages || {};
+
+    messages.type = messages.type || 'Select the type of change that you\'re committing:';
+    messages.scope = messages.scope || '\nDenote the SCOPE of this change (optional):';
+    messages.customScope = messages.customScope || 'Denote the SCOPE of this change:';
+    messages.subject = messages.subject || 'Write a SHORT, IMPERATIVE tense description of the change:\n';
+    messages.body = messages.body || 'Provide a LONGER description of the change (optional). Use "|" to break new line:\n';
+    messages.breaking = messages.breaking || 'List any BREAKING CHANGES (optional):\n';
+    messages.footer = messages.footer || 'List any ISSUES CLOSED by this change (optional). E.g.: #31, #34:\n';
+    messages.confirmCommit = messages.confirmCommit || 'Are you sure you want to proceed with the commit above?';
+
     cz.prompt(prompts).ui.process.subscribe(({ answer, name }) => {
-      // console.log(`answer is ${name} : ${answer}`);
+      // todo: add new prompt for issue tracker based on config 
+      // todo: build ref in footer part as issue link
       if (name === 'type') {
+        prompts.onNext(makeTracker(config));
         if (config.body.hasOwnProperty(answer)) {
           var template = config.body[answer];
           Object.keys(template).forEach(function (name) {
             prompts.onNext(makeBody(name, template[name]));
           });
         } else {
-          prompts.onNext(makeBody());
+          prompts.onNext(makeDefault('body'));
         }
-        prompts.onNext(makeFooter(config));
+        prompts.onNext(makeDefault('footer'));
         prompts.onNext(makeConfirm(config));
         prompts.onCompleted();
       }
