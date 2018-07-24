@@ -17,13 +17,13 @@ var buildCommit = require('./buildCommit');
 function readConfigFile() {
 
   // First try to find the .cz-config.js config file
-  var czConfig = findConfig.require(CZ_CONFIG_EXAMPLE_LOCATION, {home: false});
+  var czConfig = findConfig.require(CZ_CONFIG_EXAMPLE_LOCATION, { home: false });
   if (czConfig) {
     return czConfig;
   }
 
   // fallback to locating it using the config block in the nearest package.json
-  var pkg = findConfig('package.json', {home: false});
+  var pkg = findConfig('package.json', { home: false });
   if (pkg) {
     var pkgDir = path.dirname(pkg);
     pkg = require(pkg);
@@ -42,40 +42,122 @@ function readConfigFile() {
 }
 
 
+
+function makeChoice(config) {
+  return {
+    type: 'list',
+    name: 'type',
+    message: config.messages.type,
+    choices: config.types
+  };
+}
+
+function makeScope(config) {
+  return {
+    type: 'input',
+    name: 'scope',
+    message: config.messages.scope
+  }
+}
+
+function makeSubject(config) {
+  return {
+    type: 'input',
+    name: 'subject',
+    message: config.messages.subject
+  }
+}
+
+function makeBody(name, v) {
+  if (!name) {
+    return {
+      type: 'input',
+      name: `body`,
+      message: "default body"
+    }
+  }
+  return {
+    type: 'input',
+    name: `body.${name}`,
+    message: v.message,
+    filter(val) {
+      var content = '';
+      content = content.concat(v.prefix ? v.prefix.concat('|\t') : '')
+      content = content.concat(val)
+      content = content.concat(v.postfix ? v.postfix : '\n')
+      // wrap the content with prefix and postfix in config 
+      return content
+    }
+  }
+}
+
+function makeFooter(config) {
+  return {
+    type: 'input',
+    name: 'footer',
+    message: config.messages.footer
+  }
+}
+
+function makeConfirm(config) {
+  return {
+    type: 'expand',
+    name: 'confirmCommit',
+    choices: [
+      { key: 'y', name: 'Yes', value: 'yes' },
+      { key: 'n', name: 'Abort commit', value: 'no' },
+      { key: 'e', name: 'Edit message', value: 'edit' }
+    ],
+    message: function (answers) {
+      // fixme: can use the answer set, but body is overwritten.
+      var SEP = '###--------------------------------------------------------###';
+      log.info('\n' + SEP + '\n' + buildCommit(answers, config) + '\n' + SEP + '\n');
+      return config.messages.confirmCommit;
+    },
+    when: function (answers) {
+      return true;
+    }
+  }
+}
+
+
+
 module.exports = {
 
-  prompter: function(cz, commit) {
+  prompter: function (cz, commit) {
     var config = readConfigFile();
+    const Rx = require('rx');
+
+    const prompts = new Rx.Subject();
 
     log.info('\n\nLine 1 will be cropped at 100 characters. All other lines will be wrapped after 100 characters.\n');
 
-    // todo: dynamic create the questions template based on the type (rxjs?)
-    var questions = require('./questions').getQuestions(config, cz);
-
-    cz.prompt(questions).then(function(answers) {
-
-      if (answers.confirmCommit === 'edit') {
-        temp.open(null, function(err, info) {
-          /* istanbul ignore else */
-          if (!err) {
-            fs.write(info.fd, buildCommit(answers, config));
-            fs.close(info.fd, function(err) {
-              editor(info.path, function (code, sig) {
-                if (code === 0) {
-                  var commitStr = fs.readFileSync(info.path, { encoding: 'utf8' });
-                  commit(commitStr);
-                } else {
-                  log.info('Editor returned non zero value. Commit message was:\n' + buildCommit(answers, config));
-                }
-              });
-            });
-          }
-        });
-      } else if (answers.confirmCommit === 'yes') {
-        commit(buildCommit(answers, config));
-      } else {
-        log.info('Commit has been canceled.');
+    cz.prompt(prompts).ui.process.subscribe(({ answer, name }) => {
+      console.log(`answer is ${name} : ${answer}`);
+      if (name === 'type') {
+        if (config.body.hasOwnProperty(answer)) {
+          console.log('Build Body Template')
+          var template = config.body[answer];
+          Object.keys(template).forEach(function (name) {
+            prompts.onNext(makeBody(name, template[name]));
+          });
+        } else {
+          prompts.onNext(makeBody());
+        }
+        prompts.onNext(makeFooter(config));
+        prompts.onNext(makeConfirm(config));
+        prompts.onCompleted();
       }
-    });
+    }, (err) => {
+      console.warn(err);
+    }, () => {
+      console.log('Interactive session is complete. Good bye!');
+    })
+
+    prompts.onNext(makeChoice(config));
+    prompts.onNext(makeScope(config));
+    prompts.onNext(makeSubject(config));
   }
 };
+
+

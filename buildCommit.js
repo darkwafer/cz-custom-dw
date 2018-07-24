@@ -7,7 +7,7 @@ var wrap = require('word-wrap');
 module.exports = function buildCommit(answers, config) {
 
   var maxLineWidth = 100;
-  var entry = config.entry
+
   var wrapOptions = {
     trim: true,
     newline: '\n',
@@ -16,14 +16,13 @@ module.exports = function buildCommit(answers, config) {
   };
 
   function addScope(scope) {
-    if (!scope) return '\n'; //it could be type === WIP. So there is no scope
+    if (!scope) return ': '; //it could be type === WIP. So there is no scope
 
-    return '(' + scope.trim() + ')\n';
+    return '(' + scope.trim() + '): ';
   }
 
   function addSubject(subject) {
-    var subjectPrefix = (entry[answers.type].subject && entry[answers.type].subject.prefix) || ''
-    return subjectPrefix + subject.trim();
+    return subject.trim();
   }
 
   function escapeSpecialChars(result) {
@@ -40,9 +39,20 @@ module.exports = function buildCommit(answers, config) {
 
   // Hard limit this line
   var head = (answers.type + addScope(answers.scope) + addSubject(answers.subject)).slice(0, maxLineWidth);
+
   // Wrap these lines at 100 characters
-  var body = wrap(answers.body, wrapOptions) || '';
-  var desc = wrap(answers.desc, wrapOptions) || '';
+  var body = ''
+  if (config.body.hasOwnProperty(answers.type)) {
+    var template = config.body[answers.type]
+    Object.keys(template).forEach(function(name) {
+      body = body.concat(answers[`body.${name}`])
+    });
+  } else {
+    // attach default body 
+    body = answers.body
+  }
+  
+  var body = wrap(body, wrapOptions) || '';
   body = body.split('|').join('\n');
 
   var breaking = wrap(answers.breaking, wrapOptions);
@@ -50,20 +60,16 @@ module.exports = function buildCommit(answers, config) {
 
   var result = head;
   if (body) {
-    // todo: summarize at sub-components and push to body
-    var bodyPrefix = (entry[answers.type].body && entry[answers.type].body.prefix) || ''
-    result += '\n\n' + bodyPrefix + body;
-  }
-  if (desc) {
-    result += '\n\n' + desc;
+    result += '\n\n' + body;
   }
   if (breaking) {
-    var breakingPrefix = entry && entry[answers.type].breaking && entry[answers.type].breaking.prefix ? entry[answers.type].breaking.prefix : 'BREAKING CHANGE:';
+    var breakingPrefix = config && config.breakingPrefix ? config.breakingPrefix : 'BREAKING CHANGE:';
     result += '\n\n' + breakingPrefix + '\n' + breaking;
   }
   if (footer) {
-    var footerPrefix = entry && entry[answers.type].footer.prefix ? entry[answers.type].footer.prefix : 'ISSUES CLOSED:';
-    result += '\n\n' + footerPrefix + footer;
+    var footerPrefix = config && config.footerPrefix ? config.footerPrefix : 'ISSUES CLOSED:';
+    result += '\n\n' + footerPrefix + ' ' + footer;
   }
+
   return escapeSpecialChars(result);
 };
