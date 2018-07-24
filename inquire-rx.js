@@ -6,8 +6,6 @@ const Rx = require('rx');
 
 const prompts = new Rx.Subject();
 
-
-
 // todo: import question template and iterate 
 function makePrompt(msg) {
   return {
@@ -19,10 +17,10 @@ function makePrompt(msg) {
 
 let i = 0;
 
-inquirer.prompt(prompts).ui.process.subscribe(({ answer }) => {
+inquirer.prompt(prompts).ui.process.subscribe(({ answer, name }) => {
   if (answer !== '') {
     i += 1;
-    console.log(`answer is ${answer}\n`);
+    console.log(`answer is ${name} : ${answer} \n`);
     prompts.onNext(makePrompt(`This is prompt #${i}.`));
   } else {
     prompts.onCompleted();
@@ -31,6 +29,6 @@ inquirer.prompt(prompts).ui.process.subscribe(({ answer }) => {
   console.warn(err);
 }, () => {
   console.log('Interactive session is complete. Good bye! 👋\n');
-});
+})
 
 prompts.onNext(makePrompt());
