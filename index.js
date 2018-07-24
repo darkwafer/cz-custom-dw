@@ -133,10 +133,9 @@ module.exports = {
     log.info('\n\nLine 1 will be cropped at 100 characters. All other lines will be wrapped after 100 characters.\n');
 
     cz.prompt(prompts).ui.process.subscribe(({ answer, name }) => {
-      console.log(`answer is ${name} : ${answer}`);
+      // console.log(`answer is ${name} : ${answer}`);
       if (name === 'type') {
         if (config.body.hasOwnProperty(answer)) {
-          console.log('Build Body Template')
           var template = config.body[answer];
           Object.keys(template).forEach(function (name) {
             prompts.onNext(makeBody(name, template[name]));
