@@ -146,11 +146,39 @@ module.exports = {
     messages.footer = messages.footer || 'List any ISSUES CLOSED by this change (optional). E.g.: #31, #34:\n';
     messages.confirmCommit = messages.confirmCommit || 'Are you sure you want to proceed with the commit above?';
 
-    cz.prompt(prompts).ui.process.subscribe(({ answer, name }) => {
+    var promise = cz.prompt(prompts);
+
+    promise.then(answers => {
+      if (answers.confirmCommit === 'edit') {
+        temp.open(null, function (err, info) {
+          /* istanbul ignore else */
+          if (!err) {
+            fs.write(info.fd, buildCommit(answers, config));
+            fs.close(info.fd, function (err) {
+              editor(info.path, function (code, sig) {
+                if (code === 0) {
+                  var commitStr = fs.readFileSync(info.path, { encoding: 'utf8' });
+                  commit(commitStr);
+                } else {
+                  log.info('Editor returned non zero value. Commit message was:\n' + buildCommit(answers, config));
+                }
+              });
+            });
+          }
+        });
+      } else if (answers.confirmCommit === 'yes') {
+        commit(buildCommit(answers, config));
+      } else {
+        log.info('Commit has been canceled.');
+      }
+    });
+
+    promise.ui.process.subscribe(({ answer, name }) => {
       // todo: add new prompt for issue tracker based on config 
       // todo: build ref in footer part as issue link
       if (name === 'type') {
-        prompts.onNext(makeTracker(config));
+        if (config.issue)
+          prompts.onNext(makeTracker(config));
         if (config.body.hasOwnProperty(answer)) {
           var template = config.body[answer];
           Object.keys(template).forEach(function (name) {
@@ -163,6 +191,7 @@ module.exports = {
         prompts.onNext(makeConfirm(config));
         prompts.onCompleted();
       }
+
     }, (err) => {
       console.warn(err);
     }, () => {
