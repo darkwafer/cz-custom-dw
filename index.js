@@ -68,15 +68,11 @@ function makeSubject(config) {
   }
 }
 
-function makeTracker(config) {
+function makeTracker(issue) {
   return {
     type: 'input',
     name: 'issue',
-    message: messages.issue,
-    filter: function (val) {
-      if (!val) return '';
-      return config.issue.name + '#' + val;
-    },
+    message: issue.message || 'no message',
   }
 }
 
@@ -178,7 +174,7 @@ module.exports = {
       // todo: build ref in footer part as issue link
       if (name === 'type') {
         if (config.issue)
-          prompts.onNext(makeTracker(config));
+          prompts.onNext(makeTracker(config.issue[answer]));
         if (config.body.hasOwnProperty(answer)) {
           var template = config.body[answer];
           Object.keys(template).forEach(function (name) {
@@ -194,9 +190,7 @@ module.exports = {
 
     }, (err) => {
       console.warn(err);
-    }, () => {
-      console.log('Interactive session is complete. Good bye!');
-    })
+    }, () => { })
 
     prompts.onNext(makeChoice(config));
     prompts.onNext(makeScope(config));

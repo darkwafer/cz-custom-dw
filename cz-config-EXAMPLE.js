@@ -14,6 +14,7 @@ module.exports = {
     { value: 'WIP', name: 'WIP:      Work in progress' }
   ],
 
+  // todo: integrate later
   scopes: [
     { name: 'accounts' },
     { name: 'admin' },
@@ -26,7 +27,6 @@ module.exports = {
     scope: 'Denote the SCOPE of this change (optional):',
     // used if allowCustomScopes is true
     customScope: 'Denote the SCOPE of this change:',
-    issue: 'Mantis #',
     subject: 'Write a SHORT, IMPERATIVE tense description of the change:\n',
     body: 'Provide a LONGER description of the change (optional). Use "|" to break new line:\n',
     breaking: 'List any BREAKING CHANGES (optional):\n',
@@ -35,25 +35,28 @@ module.exports = {
   },
 
   issue: {
-    name: 'mantis',
-    link: 'https://mantis.fortinet.com/bug_view_page.php?bug_id='
+    fix: {
+      name: 'mantis',
+      message: 'Mantis #',
+      link: 'https://mantis.fortinet.com/bug_view_page.php?bug_id=###'
+    }
   },
 
   body: {
     fix: {
       symptom: {
         prefix: 'Problem Description: ',
-        message: 'Symptom: ',
+        message: 'Describe Symptom, Reproduce Steps (optional). Use "|" to break new line:\n ',
       },
 
       solution: {
         prefix: 'Solution Description: ',
-        message: 'Solution: ',
+        message: 'Describe Root Cause, and Diagnose Info (optional). Use "|" to break new line:\n ',
       },
 
       detail: {
         prefix: 'Technical Detail: ',
-        message: 'Details: ',
+        message: 'Detailed Information (optional). Use "|" to break new line:\n',
       }
     }
   }

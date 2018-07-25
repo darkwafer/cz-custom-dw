@@ -36,11 +36,13 @@ module.exports = function buildCommit(answers, config) {
     });
     return result;
   }
+  var scope = answers.scope;
+  if (answers.issue) {
+    scope = config.issue[answers.type].name + '#' + answers.issue + ', ' + scope;
+  }
 
   // Hard limit this line
-  var head = (answers.type
-    + addScope(answers.issue ? answers.issue + ', ' + answers.scope : answers.scope)
-    + addSubject(answers.subject)).slice(0, maxLineWidth);
+  var head = (answers.type + addScope(scope) + addSubject(answers.subject)).slice(0, maxLineWidth);
 
   // Wrap these lines at 100 characters
   var body = ''
@@ -73,7 +75,7 @@ module.exports = function buildCommit(answers, config) {
     result += '\n\n' + footerPrefix + ' ' + footer;
   }
   if (answers.issue) {
-    result += '\n' + config.issue.link + answers.issue;
+    result += '\n' + config.issue[answers.type].link.replace('###', answers.issue);
   }
 
   return escapeSpecialChars(result);
